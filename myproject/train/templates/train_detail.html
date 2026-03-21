@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Деталі поїзда</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-5">
+    <h1 class="mb-4">{{ train.name }} ({{ train.number }})</h1>
+    
+    {% if train.image %}
+        <div class="mb-4">
+            <img src="{{ train.image.url }}" alt="{{ train.name }}" style="max-width: 400px;" class="img-fluid rounded">
+        </div>
+    {% endif %}
+
+    <div class="card p-4 mb-4">
+        <h5 class="card-title">Маршрут</h5>
+        <p><strong>Від:</strong> {{ train.departure }}</p>
+        <p><strong>До:</strong> {{ train.arrival }}</p>
+        <p><strong>Час відправлення:</strong> {{ train.departure_time|date:"d.m.Y H:i" }}</p>
+        <p><strong>Час прибуття:</strong> {{ train.arrival_time|date:"d.m.Y H:i" }}</p>
+    </div>
+
+    <div class="card p-4 mb-4">
+        <h5 class="card-title">Склад поїзда</h5>
+        <p>
+            <strong>Попередній елемент:</strong>
+            {% if train.previous_unit %}
+                {{ train.previous_unit }}
+            {% else %}
+                <em>-</em>
+            {% endif %}
+        </p>
+        <p>
+            <strong>Наступний елемент:</strong>
+            {% if train.next_unit %}
+                {{ train.next_unit }}
+            {% else %}
+                <em>-</em>
+            {% endif %}
+        </p>
+    </div>
+
+    <div class="mt-4">
+        <a href="{% url 'update_train' train.pk %}" class="btn btn-warning">Редагувати</a>
+        <a href="{% url 'delete_train' train.pk %}" class="btn btn-danger">Видалити</a>
+        <a href="{% url 'train_list' %}" class="btn btn-secondary">До списку</a>
+    </div>
+</body>
+</html>
