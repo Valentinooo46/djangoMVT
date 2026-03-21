@@ -13,8 +13,30 @@ class TrainUnit(models.Model):
     def __str__(self):
         return f"{self.name} ({self.number})"
 
-    class Meta:
-        ordering = ['number']
+    def save(self, *args, **kwargs):
+        # Викликаємо валідацію перед збереженням
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+        # Оновлюємо зворотні зв'язки після збереження
+        self._update_reverse_links()
+
+    def _update_reverse_links(self):
+        """
+        Оновлює зворотні зв'язки для підтримання симетрії
+        """
+        # Якщо є previous_unit, встановлюємо його next_unit на self
+        if self.previous_unit:
+            if self.previous_unit.next_unit != self:
+                self.previous_unit.next_unit = self
+                # Зберігаємо без виклику сигналів, щоб уникнути рекурсії
+                super(TrainUnit, self.previous_unit).save(update_fields=['next_unit'])
+
+        # Якщо є next_unit, встановлюємо його previous_unit на self
+        if self.next_unit:
+            if self.next_unit.previous_unit != self:
+                self.next_unit.previous_unit = self
+                super(TrainUnit, self.next_unit).save(update_fields=['previous_unit'])
 
 class Train(TrainUnit,models.Model):
    

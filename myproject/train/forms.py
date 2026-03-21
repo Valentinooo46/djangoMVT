@@ -17,6 +17,25 @@ class TrainForm(forms.ModelForm):
             "next_unit": forms.Select(attrs={"class": "form-control"}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Виключаємо поточний об'єкт з вибору для previous_unit та next_unit
+        if self.instance and self.instance.pk:
+            self.fields['previous_unit'].queryset = self.fields['previous_unit'].queryset.exclude(pk=self.instance.pk)
+            self.fields['next_unit'].queryset = self.fields['next_unit'].queryset.exclude(pk=self.instance.pk)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        previous_unit = cleaned_data.get('previous_unit')
+        next_unit = cleaned_data.get('next_unit')
+
+        # Додаткова перевірка на цикли
+        if previous_unit and next_unit:
+            if previous_unit == next_unit:
+                raise forms.ValidationError("Попередня та наступна одиниці не можуть бути однаковими.")
+
+        return cleaned_data
+
 class CarriageForm(forms.ModelForm):
     class Meta:
         model = Carriage
@@ -27,3 +46,22 @@ class CarriageForm(forms.ModelForm):
             "previous_unit": forms.Select(attrs={"class": "form-control"}),
             "next_unit": forms.Select(attrs={"class": "form-control"}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Виключаємо поточний об'єкт з вибору для previous_unit та next_unit
+        if self.instance and self.instance.pk:
+            self.fields['previous_unit'].queryset = self.fields['previous_unit'].queryset.exclude(pk=self.instance.pk)
+            self.fields['next_unit'].queryset = self.fields['next_unit'].queryset.exclude(pk=self.instance.pk)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        previous_unit = cleaned_data.get('previous_unit')
+        next_unit = cleaned_data.get('next_unit')
+
+        # Додаткова перевірка на цикли
+        if previous_unit and next_unit:
+            if previous_unit == next_unit:
+                raise forms.ValidationError("Попередня та наступна одиниці не можуть бути однаковими.")
+
+        return cleaned_data
