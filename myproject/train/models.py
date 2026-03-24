@@ -21,6 +21,7 @@ class TrainUnit(models.Model):
 
         # Оновлюємо зворотні зв'язки після збереження
         self._update_reverse_links()
+    @transaction.atomic
     def _update_reverse_links(self):
         """
         Оновлює зворотні зв'язки для підтримання симетрії
@@ -33,15 +34,14 @@ class TrainUnit(models.Model):
         Аналогічно для наступної одиниці. Це потрібно для підтримання цілісності даних, щоб не було "завислих" зв'язків, коли одна одиниця вказує на іншу,
         але та не вказує на неї у відповідь.
         """
-        if self.pk:  # існуючий об'єкт
-            old = TrainUnit.objects.filter(pk=self.pk).first()
-            if old:
-                if old.previous_unit and self.previous_unit is None:
-                    old.previous_unit.next_unit = None
-                    old.previous_unit.save(update_fields=["next_unit"])
-                if old.next_unit and self.next_unit is None:
-                    old.next_unit.previous_unit = None
-                    old.next_unit.save(update_fields=["previous_unit"])
+        if self.previous_unit is None:
+            TrainUnit.objects.filter(next_unit=self).update(next_unit=None)
+
+        if self.next_unit is None:
+            TrainUnit.objects.filter(previous_unit=self).update(previous_unit=None)
+
+
+
 
         # Якщо є previous_unit, встановлюємо його next_unit на self
         if self.previous_unit:
@@ -49,7 +49,7 @@ class TrainUnit(models.Model):
                 #забороняємо приєднання якщо існує зв'язок з іншим об'єктом
                 if self.previous_unit.next_unit:
                     self.previous_unit = None
-                    self.save(update_fields=['previous_unit'])
+                    super().save(update_fields=['previous_unit'])
                 else:
 
                     self.previous_unit.next_unit = self
@@ -62,7 +62,7 @@ class TrainUnit(models.Model):
                 #забороняємо приєднання якщо існує зв'язок з іншим об'єктом
                 if self.next_unit.previous_unit:
                     self.next_unit = None
-                    self.save(update_fields=['next_unit'])
+                    super().save(update_fields=['next_unit'])
                 else:
                     self.next_unit.previous_unit = self
                     self.next_unit.save(update_fields=['previous_unit'])
