@@ -59,7 +59,7 @@ def carriage_detail(request, pk):
 @login_required(login_url="/register/")
 def create_carriage(request):
     if request.method == "POST":
-        form = CarriageForm(request.POST)
+        form = CarriageForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect("carriage_list")
@@ -71,7 +71,7 @@ def create_carriage(request):
 def update_carriage(request, pk):
     carriage = Carriage.objects.get(pk=pk)
     if request.method == "POST":
-        form = CarriageForm(request.POST, instance=carriage)
+        form = CarriageForm(request.POST,request.FILES, instance=carriage)
         if form.is_valid():
             form.save()
             return redirect("carriage_list")

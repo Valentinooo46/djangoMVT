@@ -21,8 +21,9 @@ class TrainForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Виключаємо поточний об'єкт з вибору для previous_unit та next_unit
         if self.instance and self.instance.pk:
-            self.fields['previous_unit'].queryset = self.fields['previous_unit'].queryset.exclude(pk=self.instance.pk)
-            self.fields['next_unit'].queryset = self.fields['next_unit'].queryset.exclude(pk=self.instance.pk)
+            self.fields['previous_unit'].queryset = self.instance.get_available_previous_units()
+            self.fields['next_unit'].queryset = self.instance.get_available_next_units()
+
 
     def clean(self):
         cleaned_data = super().clean()
@@ -39,20 +40,23 @@ class TrainForm(forms.ModelForm):
 class CarriageForm(forms.ModelForm):
     class Meta:
         model = Carriage
-        fields = ["name", "number", "previous_unit", "next_unit"]
+        fields = ["name", "number", "previous_unit", "next_unit","image"]
         widgets = {
             "name": forms.TextInput(attrs={"class": "form-control"}),
             "number": forms.TextInput(attrs={"class": "form-control"}),
             "previous_unit": forms.Select(attrs={"class": "form-control"}),
             "next_unit": forms.Select(attrs={"class": "form-control"}),
+            "image": forms.FileInput(attrs={"class": "form-control"}),
+
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Виключаємо поточний об'єкт з вибору для previous_unit та next_unit
         if self.instance and self.instance.pk:
-            self.fields['previous_unit'].queryset = self.fields['previous_unit'].queryset.exclude(pk=self.instance.pk)
-            self.fields['next_unit'].queryset = self.fields['next_unit'].queryset.exclude(pk=self.instance.pk)
+            self.fields['previous_unit'].queryset = self.instance.get_available_previous_units()
+            self.fields['next_unit'].queryset = self.instance.get_available_next_units()
+
 
     def clean(self):
         cleaned_data = super().clean()

@@ -6,10 +6,10 @@
 </head>
 <body class="container mt-5">
     <h1 class="mb-4">Додати новий вагон</h1>
-    <form method="post" class="card p-4 shadow-sm">
+    <form method="post" enctype="multipart/form-data"class="card p-4 shadow-sm">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Зберегти</button>
+        <button type="submit"  class="btn btn-primary">Зберегти</button>
         <a href="{% url 'carriage_list' %}" class="btn btn-secondary">Назад</a>
     </form>
 </body>

@@ -7,7 +7,11 @@
 <body class="container mt-5">
     {% load train_filters %}
     <h1 class="mb-4">{{ carriage.name }} ({{ carriage.number }})</h1>
-    
+    {% if carriage.image %}
+        <div class="mb-4">
+            <img src="{{ carriage.image.url }}" alt="{{ carriage.name }}" style="max-width: 400px;" class="img-fluid rounded">
+        </div>
+    {% endif %}
     <div class="py-3">
         <p><strong>Id вагону:</strong> {{ carriage.id }}</p>
         <p><strong>Назва:</strong> {{ carriage.name }}</p>

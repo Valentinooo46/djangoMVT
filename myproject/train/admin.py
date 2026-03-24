@@ -16,7 +16,12 @@ class TrainAdmin(TrainUnitAdmin):
     )
 
 class CarriageAdmin(TrainUnitAdmin):
-    pass
+    list_display = ("name", "number", "previous_unit", "next_unit", "image")
+    fieldsets = (
+        ('Основна інформація', {'fields': ('name', 'number', 'id')}),
+        ('Додатково', {'fields': ('image', 'previous_unit', 'next_unit')}),
+    )
+    
 
 admin.site.register(TrainUnit, TrainUnitAdmin)
 admin.site.register(Train, TrainAdmin)
