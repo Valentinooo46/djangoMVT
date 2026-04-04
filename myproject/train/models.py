@@ -107,21 +107,39 @@ class TrainUnit(models.Model):
         OK
         Повертає всі одиниці в одному ланцюжку з поточною
         """
-        chain = set()
+        list = self.get_previous_units_chain() + self.get_next_units_chain()
+
+
+        return TrainUnit.objects.filter(pk__in=[unit.pk for unit in list])
+    def get_previous_units_chain(self):
+        # current = self
+        # chain = set()
+        # # Йдемо назад по ланцюжку
+        # while current.previous_unit:
+        #     chain.add(current.previous_unit)
+        #     current = current.previous_unit
+        # return chain
+        chain = []
         current = self
-
-        # Йдемо назад по ланцюжку
         while current.previous_unit:
-            chain.add(current.previous_unit)
+            chain.insert(0, current.previous_unit)  # додаємо на початок
             current = current.previous_unit
+        return chain
 
-        # Йдемо вперед по ланцюжку
+    def get_next_units_chain(self):
+        # current = self
+        # chain = set()
+        # # Йдемо вперед по ланцюжку
+        # while current.next_unit:
+        #     chain.add(current.next_unit)
+        #     current = current.next_unit
+        # return chain
+        chain = []
         current = self
         while current.next_unit:
-            chain.add(current.next_unit)
+            chain.append(current.next_unit)  # додаємо в кінець
             current = current.next_unit
-
-        return TrainUnit.objects.filter(pk__in=[unit.pk for unit in chain])
+        return chain
 
     def can_attach_previous(self, unit):
         """
