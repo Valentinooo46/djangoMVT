@@ -1,5 +1,6 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
+from .api import router
 
 urlpatterns = [
     # Train URLs
@@ -14,4 +15,6 @@ urlpatterns = [
     path("carriage/create/", views.create_carriage, name="create_carriage"),
     path("carriage/<int:pk>/update/", views.update_carriage, name="update_carriage"),
     path("carriage/<int:pk>/delete/", views.delete_carriage, name="delete_carriage"),
+    # API URLs
+    path("api/", include(router.urls)),
 ]
