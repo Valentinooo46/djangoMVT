@@ -1,5 +1,6 @@
 from django import forms
 from .models import Train, Carriage
+from PIL import Image
 
 class TrainForm(forms.ModelForm):
     class Meta:
@@ -23,6 +24,27 @@ class TrainForm(forms.ModelForm):
         if self.instance and self.instance.pk:
             self.fields['previous_unit'].queryset = self.instance.get_available_previous_units()
             self.fields['next_unit'].queryset = self.instance.get_available_next_units()
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+
+        if instance.image:
+            img = Image.open(instance.image)
+           
+            width, height = img.size
+            min_dim = min(width, height)
+            left = (width - min_dim) // 2
+            top = (height - min_dim) // 2
+            right = left + min_dim
+            bottom = top + min_dim
+            img = img.crop((left, top, right, bottom))
+
+            
+            img.save(instance.image.path)
+
+        if commit:
+            instance.save()
+        return instance
 
 
     def clean(self):
@@ -57,6 +79,26 @@ class CarriageForm(forms.ModelForm):
             self.fields['previous_unit'].queryset = self.instance.get_available_previous_units()
             self.fields['next_unit'].queryset = self.instance.get_available_next_units()
 
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+
+        if instance.image:
+            img = Image.open(instance.image)
+            
+            width, height = img.size
+            min_dim = min(width, height)
+            left = (width - min_dim) // 2
+            top = (height - min_dim) // 2
+            right = left + min_dim
+            bottom = top + min_dim
+            img = img.crop((left, top, right, bottom))
+
+          
+            img.save(instance.image.path)
+
+        if commit:
+            instance.save()
+        return instance
 
     def clean(self):
         cleaned_data = super().clean()
