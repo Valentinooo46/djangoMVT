@@ -19,13 +19,20 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from rest_framework.routers import DefaultRouter
+from items.views import ItemViewSet
+from train.views import TrainViewSet, CarriageViewSet
 
-
+router = DefaultRouter()
+router.register(r'items', ItemViewSet)
+router.register(r'trains', TrainViewSet)
+router.register(r'carriages', CarriageViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('users.urls')),
     path('train/', include('train.urls')),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/', include(router.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

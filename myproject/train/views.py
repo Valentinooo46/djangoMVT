@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect
 from .models import Train, Carriage
 from .forms import TrainForm, CarriageForm
 from django.contrib.auth.decorators import login_required
-
+from rest_framework.viewsets import ModelViewSet
+from .serializers import TrainSerializer, CarriageSerializer
 # TRAIN CRUD
 @login_required(login_url="/login/")
 def train_list(request):
@@ -108,3 +109,11 @@ def delete_carriage(request, pk):
         carriage.delete()
         return redirect("carriage_list")
     return render(request, "delete_carriage.html", {"carriage": carriage})
+
+class TrainViewSet(ModelViewSet):
+    queryset = Train.objects.all()
+    serializer_class = TrainSerializer
+
+class CarriageViewSet(ModelViewSet):
+    queryset = Carriage.objects.all()
+    serializer_class = CarriageSerializer
